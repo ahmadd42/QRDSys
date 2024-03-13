@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Page</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+<body>
+    <h3>Test Page</h3>
+    <button onclick="postRequest()">Fetch Data</button>
+
+    <select id="test_sel">
+        <option>One</option>
+        <option>Two</option>
+        <option>Three</option>
+        <option>Four</option>
+    </select>
+
+    <script>
+
+        function setIndex() {
+            if(!document.getElementById("test_sel").disabled) {
+                alert("It is not disabled");
+            }
+            document.getElementById("test_sel").selectedIndex = 3;
+        }
+
+function postRequest() {
+    fetch('/collection/getqrdhist/', {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers:{
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+        'X-CSRFToken': csrftoken,
+},
+    body: JSON.stringify({usrname:'ahmadd42'}) //JavaScript object of data to POST
+})
+.then(response => {
+        return response.json() //Convert response to JSON
+})
+.then(data => {
+    var value = jsonToArray(data)
+    alert(value[0][1]);
+});
+    }
+
+    function sendSMSNot() {
+    fetch('/collection/sendsms/', {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers:{
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+        'X-CSRFToken': csrftoken,
+},
+    //body: JSON.stringify({'params':cat + " " + zip}) //JavaScript object of data to POST
+})
+.then(response => {
+        return response.json() //Convert response to JSON
+})
+.then(data => {
+    var value = jsonToArray(data)
+    alert(value[0][1]);
+});
+    }
+
+
+    function getSubs() {
+        cat = "cat_004";
+        zip = "ny90450";
+    fetch('/collection/subs/', {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers:{
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+        'X-CSRFToken': csrftoken,
+},
+    body: JSON.stringify({'params':cat + " " + zip}) //JavaScript object of data to POST
+})
+.then(response => {
+        return response.json() //Convert response to JSON
+})
+.then(data => {
+    var value = jsonToArray(data)
+    alert(value[0][1]);
+//Perform actions with the response data from the view
+//var values = jsonToArray(data);
+//alert(values[0] + "   " + values[1]);
+});
+    }
+
+    function authenticate() {
+        username = "ahmadd42";
+        pass = "Me@040780";
+        //alert("sending fetch request");
+    fetch('/collection/auth/', {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers:{
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+        'X-CSRFToken': csrftoken,
+},
+    body: JSON.stringify({'params':username + " " + pass}) //JavaScript object of data to POST
+})
+.then(response => {
+        return response.json() //Convert response to JSON
+})
+.then(data => {
+    var value = jsonToArray(data);
+    alert(value[0][1]);
+//Perform actions with the response data from the view
+//var values = jsonToArray(data);
+//alert(values[0] + "   " + values[1]);
+});
+    }
+
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+
+function getValues(str) {
+    //var str = "[{\"cat_id\":\"cat_001\",\"cat_desc\":\"Look for workers that provide house help\"}]";
+    const result = str.split(/[\[{,:}"\]]/);
+    return result;
+}
+
+function jsonToArray(json_data) {
+  var result = [];
+  for(var i in json_data)
+      result.push([i, json_data[i]]);
+  return result;
+}
+
+</script>
+    
+</body>
+</html>

@@ -1,0 +1,329 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<title>Service Garage - Your ultimate service marketplace</title>
+<link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+<!--<link rel="stylesheet" href="{% static 'w3.css' %}">-->
+<script lang="JavaScript" src="{% static 'functions.js' %}"></script>
+
+<script lang="Javascript">
+
+  function getDescription() {
+      var cat = document.getElementById("query-cats").value;
+      var desc = "<b>Category Description:</b><br>";
+
+      if(cat == "Select a category") {
+        document.getElementById("desc").innerHTML = "";
+        document.getElementById("category_id").innerHTML = "";
+      }
+      else {
+
+      fetch('/collection/cats/', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers:{
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+          'X-CSRFToken': csrftoken,
+      },
+    body: JSON.stringify({querycat_name:cat}) //JavaScript object of data to POST
+    })
+    .then(response => {
+        return response.json() //Convert response to JSON
+    })
+    .then(data => {
+//Perform actions with the response data from the view
+    values = jsonToArray(data);
+    desc += values[1][1];
+    document.getElementById("desc").innerHTML = desc;
+    document.getElementById("category_id").innerHTML = values[0][1];
+  });
+  }
+}
+
+function getSubs() {
+    var cat = document.getElementById("category_id").innerHTML;
+    var zip = document.getElementById("zipc").value;
+    
+    if(cat == ""||zip == "") {
+      document.getElementById("msg").innerHTML = "Please select a category and enter your zip code";
+    }
+    else {      
+      const data_to_send = {
+      cat_name:cat,
+      zip_code:zip,
+    };
+
+    fetch('/collection/subs/', {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers:{
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+        'X-CSRFToken': csrftoken,
+},
+    body: JSON.stringify(data_to_send) //JavaScript object of data to POST
+})
+.then(response => {
+        return response.json() //Convert response to JSON
+})
+.then(data => {
+    var value = jsonToArray(data)
+    document.getElementById("msg").innerHTML = "We have <b>" + value[0][1] + "</b> service providers available in the selected category in your area";
+  });
+  }
+showCollapsed(document,"ser-nos");
+}
+
+function showGuestLogin() {
+    modal.style.display = "none";
+      var g_email = document.getElementById("g-email").value;
+
+      fetch('/collection/guest-reg/', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers:{
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+          'X-CSRFToken': csrftoken,
+      },
+    body: JSON.stringify({gs_email:g_email}) //JavaScript object of data to POST
+    })
+    .then(response => {
+        return response.json() //Convert response to JSON
+    })
+    .then(data => {
+//Perform actions with the response data from the view
+    values = jsonToArray(data);
+    document.getElementById("guest_id").innerHTML = "<b>" + values[0][1] + "</b>";
+    document.getElementById("g_id").value = values[0][1];
+  });
+
+    document.getElementById("side-heading").innerHTML = "Supply your temporay password sent on your email<br> address";
+    document.getElementById("loginform").style.display = "none";
+    document.getElementById("guestform").style.display = "none";
+    document.getElementById("guest_login").style.display = "block";
+  }
+
+</script>
+
+</head>
+<body>
+    <br>
+    <section class="top-intro">
+    <div class="top-intro left-padding"></div>
+    <div><img src="{% static 'mono2.jpg' %}" alt="website template image"></div>
+    <div id="mid-space" class="spacing"></div>
+    <div id="primary-nav-before" style="display: inline;">            
+        <nav class="top-intro right-nav">
+            <a class="top-link" href="/">Home</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a class="top-link" href="#">About us</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a class="top-link" href="collection/userlogin/">Log in</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a class="top-link" href="collection/signup/">Create an account</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a class="top-link" href="#">Contact us</a>
+        </nav>
+    </div>
+</section>
+
+<div>
+    <img class="container" src="{% static 'Main-Banner-2.jpg' %}" alt="website main banner">  
+</div>
+<div class="service-no hidden-panel" id="ser-nos">
+  <div class="left-padding-large"></div>
+  <div class="cat-no-content" id="msg">Please select a category and enter your zip code</div>
+</div>
+
+
+<div class="cat-form top-intro">
+    <form class="form-inline form-centered">
+      <label for="categories" class="m-2">Select a category</label>
+      <select class="form-control m-2" id="query-cats" name="sellist1" onfocus="closeCollapsed(document,'ser-nos')" onchange="getDescription(document,'/collection/cats/')">
+        <option>Select a category</option>
+        {% for x in all_cats %}
+        <option>{{x.cat_name}}</option>
+        {% endfor %}
+      </select>
+      <label for="zipc" class="m-2">Zip Code</label>
+      <input type="text" class="form-control m-2" id="zipc" maxlength="20" onfocus="closeCollapsed(document,'ser-nos')" required>
+      <input type="button" id="cat-sbm" class="btn btn-primary m-2" value="Search" onclick="getSubs()">
+    </form>
+    
+    <div class="cat-desc"></div>
+    <div class="form-centered wide" id="desc"></div>
+    <p id="category_id" style="display: none;"></p>
+  </div>
+
+  <br>
+  <div class="radio-form" id="radioform">
+    <p>Do you have an account with us ?</p>
+    
+    <div class="top-intro">
+    
+      <div class="form-check">
+      <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" onclick="showLoginForm(document)" checked>
+      <label class="form-check-label" for="flexRadioDefault1">
+        Yes
+      </label>
+    </div>
+    
+    <div class="center-spacing"></div>
+    
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" onclick="showGuestForm(document)">
+      <label class="form-check-label" for="flexRadioDefault2">
+        No
+      </label>
+    </div>
+    </div>
+    </div>
+
+    <br>
+    
+
+    <div class="top-intro" id="loginpanel">
+
+    <div class="login-form animate-opacity" id="loginform">
+      <form name="signinform" action="/collection/auth/" method="POST">
+        {% csrf_token %}
+        <div class="container c-form">
+          <p class="login-message" id="guest-msg" name="guest-msg">{{ msg }}</p>
+          <p class="form-heading"><u>Sign in with your credentials</u></p>
+          
+          <!--<input type="text" name="page_name" value="indexpage" style="display: none;" />-->
+            <label class="form-label" for="u-id">User id:</label>
+            <input type="text" id="u_id" name="u_id" class="form-control" value="{{ uname }}" required />
+            <label class="form-label" for="u-pass">Password:</label>
+            <input type="password" id="u_pass" name="u_pass" class="form-control" value="{{ upass }}" required />
+          <br>
+        <input type="submit" id="login-sbm" class="btn btn-primary m-2" value="Sign in">
+        </div>
+      </form>
+      </div>
+      
+      <div class="login-form hidden-div animate-opacity guest-login" id="guestform">
+        <form>
+          <div class="container c-form">
+            <p class="form-heading"><u>Continue as guest. Verify your email</u></p>
+              <!--<label class="form-label" for="g-name">Your name:</label>
+              <input type="text" id="g-name" class="form-control" />-->
+              <label class="form-label" for="g-email">Your email:</label>
+              <input type="email" id="g-email" class="form-control" />
+            <br>
+          <input type="button" id="guest-sbm" class="btn btn-primary m-2" value="Continue" onclick="showLoader()">
+          </div>
+        </form>
+        <br>
+        </div>
+
+        <div class="login-form hidden-div animate-opacity guest-login" id="guest_login">
+          <form name="g_credentials" action="/collection/guest-auth/" method="POST">
+            {% csrf_token %}
+            <div class="container c-form">
+              <p class="form-heading"><u>Guest Sign in</u></p>
+              <!--<p class="hidden-div" id="guest_name"></p>-->
+              <p class="form-label" id="guest_id"></p>
+              <input type="text" id="g_id" name="g_id" class="form-control hidden-div"  />
+              <label class="form-label" for="g_pass">Please enter the temporary password sent on your email:</label>
+                <input type="password" id="g_pass" name="g_pass" class="form-control" />
+              <br>
+            <input type="submit" id="guest-sbm" class="btn btn-primary m-2" value="Sign in">
+            </div>
+          </form>
+          <br>
+          </div>
+
+        <div class="center-spacing"></div>
+        <div class="side-panel animate-opacity" id="side_desc">
+        <h3 style="padding:12%" id="side-heading">Already registered ? Sign in with your credentials</h2>
+        </div>
+        </div>
+  <div>
+  <h2>&nbsp;&nbsp;&nbsp;All Categories</h2>
+  </div>
+
+  <div class="grid-container">
+  
+    <div><br><br>
+      <p class="cat-heading">House help</p><br>
+      <p class="cat-number">13</p>
+    </div>
+
+    <div><br><br>
+      <p class="cat-heading">Babysitting</p><br>
+      <p class="cat-number">13</p>
+    </div>
+
+    <div><br><br>
+      <p class="cat-heading">Paint jobs</p><br>
+      <p class="cat-number">13</p>
+    </div>
+
+    <div><br><br>
+      <p class="cat-heading">House repairs</p><br>
+      <p class="cat-number">13</p>
+    </div>
+
+    <div><br><br>
+      <p class="cat-heading">Software development</p><br>
+      <p class="cat-number">13</p>
+    </div>
+
+    <div><br><br>
+      <p class="cat-heading">Digital assistance</p><br>
+      <p class="cat-number">13</p>
+    </div>
+
+    <div><br><br>
+      <p class="cat-heading">Marriage counselling</p><br>
+      <p class="cat-number">13</p>
+    </div>
+
+    <div><br><br>
+      <p class="cat-heading">Tax solicitor</p><br>
+      <p class="cat-number">13</p>
+    </div>
+
+  </div>
+
+  <div class="bottom-strip">
+
+    <div class="bottom-bar-spacing"></div>
+    <a class="bottom-link" href="collection/copyright/">Copyright © 2023</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <a class="bottom-link" href="collection/service">Terms of service</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <a class="bottom-link" href="collection/privacy">Privacy terms</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+    <div class="bottom-bar-spacing-center"></div>
+    <div><a href="#"><img class="social" src="{% static 'facebook3.png' %}" alt="website template image" onContextMenu="return false;"></a></div>
+    <div><a href="#"><img class="social" src="{% static 'twitter3.png' %}" alt="website template image"></a></div>
+    <div><a href="#"><img class="social" src="{% static 'linkedin3.png' %}" alt="website template image"></a></div>
+    <div><a href="#"><img class="social" src="{% static 'instagram3.png' %}" alt="website template image"></a></div>
+    <div><a href="#"><img class="social" src="{% static 'pinterest3.png' %}" alt="website template image"></a></div>
+  </div>
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <div class="loader"></div>
+  </div>
+
+</div>
+
+<script>
+var modal = document.getElementById("myModal");
+
+function showLoader() {
+  modal.style.display = "block";
+  setTimeout(showGuestLogin,700);  
+}
+
+</script>
+</body>
+</html>

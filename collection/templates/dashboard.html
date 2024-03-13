@@ -1,0 +1,337 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dashboard for {{ userobj.user_id }}</title>
+<link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+<script>
+    const dashboard_items = ["acc-a","notify-a","sub-a","hist-a","qrd-a","credit-a"];
+    function showOptions(option) {
+        const items = document.getElementsByTagName("a");
+        for (i=0; i<items.length; i++) {
+            if(dashboard_items.includes(items[i].id)) {
+                items[i].style.fontWeight = "normal";
+            }
+        }
+        document.getElementById(option).style.fontWeight="bold";
+        if (option == "acc-a") {
+            document.getElementById("notify-div").style.display = "none";
+            document.getElementById("newqrd-div").style.display = "none";
+            document.getElementById("qrd_history").style.display = "none";
+            document.getElementById("acc-pan").style.display = "inline";
+        }
+        else if (option == "notify-a") {
+            document.getElementById("acc-pan").style.display = "none";
+            document.getElementById("newqrd-div").style.display = "none";
+            document.getElementById("qrd_history").style.display = "none";
+            document.getElementById("notify-div").style.display = "inline";
+        }
+        else if (option == "qrd-a") {
+            document.getElementById("acc-pan").style.display = "none";
+            document.getElementById("notify-div").style.display = "none";
+            document.getElementById("qrd_history").style.display = "none";
+            document.getElementById("newqrd-div").style.display = "inline";
+        }
+        else if (option == "hist-a") {
+            document.getElementById("acc-pan").style.display = "none";
+            document.getElementById("notify-div").style.display = "none";
+            document.getElementById("newqrd-div").style.display = "none";
+            document.getElementById("qrd_history").style.display = "inline";
+        }
+    }
+
+    function enableEdit(Tohide, Toshow) {
+        if(Toshow == "newphone-field") {
+            var phoneno = document.getElementById("user-phone").innerHTML;
+            var trimmed = phoneno.replace('+','');
+            document.getElementById("newphone").value = trimmed;
+        }
+        document.getElementById(Tohide).style.display = "none";
+        document.getElementById(Toshow).style.display = "inline";
+        document.getElementById("save-chg").style.display = "flex";
+    }
+
+    function cancelEdit() {
+        document.getElementById("newemail-field").style.display = "none";
+        document.getElementById("newphone-field").style.display = "none";
+        document.getElementById("oldpass-div").style.display = "none";
+        document.getElementById("newpass-div").style.display = "none";
+        document.getElementById("connewpass-div").style.display = "none";
+        document.getElementById("save-chg").style.display = "none";
+        document.getElementById("email-val").style.display = "inline"; 
+        document.getElementById("phone-val").style.display = "inline";
+    }
+
+    function enableEditPassword() {
+        document.getElementById("oldpass-div").style.display = "flex";
+        document.getElementById("newpass-div").style.display = "flex";
+        document.getElementById("connewpass-div").style.display = "flex";
+        document.getElementById("save-chg").style.display = "flex";
+        
+    }
+</script>
+
+</head>
+<body>
+    <br>
+    <section class="top-intro">
+        <div class="top-intro left-padding"></div>
+        <div><img src="{% static 'mono2.jpg' %}" alt="website template image"></div>
+        <div class="left-padding-large"></div>
+        <div>            
+            <nav class="top-intro right-nav">
+                <a class="top-link" href="/">Home</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a class="top-link" href="#">About us</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a class="top-link" href="/collection/signup">Create an account</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a class="top-link" href="#">Contact us</a>
+            </nav>
+        </div>
+      
+        <div>
+            <p class="user-name"><b><i> {{ userobj.user_id }} </i></b></p>
+          </div>
+
+    </section>
+    <br>
+    <div class="dashboard-bar">
+        <div class="left-padding"></div>
+        <div><img src="{% static 'dashboard.png' %}"></div>
+        <p class="main-heading-dashboard"> &nbsp;Your dashboard</p>
+        </div>
+    <br>
+    <div class="top-intro">
+        <div class="control-panel">
+            <div>
+                <ul id="d-options">
+                    {% if userobj.type_of_user == "subscriber" %}
+                    <li class="dashboard-spacing"><a id="acc-a" href="#" onclick="showOptions('acc-a')">Account options</a></li>
+                    <li class="dashboard-spacing"><a id="notify-a" href="#" onclick="showOptions('notify-a')">Notification settings</a></li>
+                    <li class="dashboard-spacing"><a id="sub-a" href="#" onclick="showOptions('sub-a')">Subscription management</a></li>
+                    <li class="dashboard-spacing"><a id="credit-a" href="#" onclick="showOptions('credit-a')">Purchase credits</a></li>
+                    {% else %}
+                    <li class="dashboard-spacing"><a id="acc-a" href="#" onclick="showOptions('acc-a')">Account options</a></li>
+                    <li class="dashboard-spacing"><a id="hist-a" href="#" onclick="showOptions('hist-a')">Quote request history</a></li>
+                    <li class="dashboard-spacing"><a id="qrd-a" href="#" onclick="showOptions('qrd-a')">Send a new quote request</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div style="padding: 53%;"></div>
+            <div>
+                <ul>
+                    <li><a href="/collection/logout/"><b>Log out</b></a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="left-padding"></div>
+
+        <div style="width:80%;height: 80%;">
+
+            <div class="hidden-div animate-opacity" id="acc-pan">
+            
+                <div><h3>Account Settings</h3></div>
+                <br>
+                <div class="top-intro">
+                    <div>
+                            <p><b>First Name:</b></p>
+                            <p>{{ userobj.firstname }}</p>
+                    </div>
+                    <div class="left-padding"></div>
+                    <div>
+                        <p><b>Last Name:</b></p>
+                        <p>{{ userobj.lastname }}</p>
+                    </div>
+                </div>
+
+        
+                <div>
+                    <div><p><b>Email address:</b></p></div>
+                    <div class="top-intro">
+                        <div class="animate-opacity" id="email-val"> <p>{{ userobj.email }}</p> </div>
+                        <div class="hidden-div animate-opacity" id="newemail-field"><input type="email" class="form-control" id="newemail" value="{{ userobj.email }}" /></div>
+                        <div class="left-padding"></div>&nbsp;&nbsp;&nbsp;
+                        <div><button class="btn btn-primary m-2" onclick="enableEdit('email-val','newemail-field')"> Edit </button></div>
+                    </div>
+                </div>
+
+
+                <div>
+                    <div><p><b>Phone No:</b></p></div>
+                    <div class="top-intro">
+                        <div class="animate-opacity" id="phone-val"> <p id="user-phone">{{ userobj.phone }}</p> </div>
+                        <div class="hidden-div animate-opacity" id="newphone-field"><input type="number" class="form-control" id="newphone" value="{{ userobj.phone }}" /></div>
+                        <div class="left-padding"></div>&nbsp;&nbsp;&nbsp;
+                        <div><button class="btn btn-primary m-2" onclick="enableEdit('phone-val','newphone-field')"> Edit </button></div>
+                    </div>
+                </div>
+
+                <div>
+                    <div><p><b>User Id:</b></p></div>
+                    <div> <p>{{ userobj.user_id }}</p> </div>
+                </div>
+                
+                <br>
+                <div id="chgpass-div"><button class="btn btn-primary m-2" onclick="enableEditPassword()">Change Password</button></div>
+                <br>
+            <div>
+
+            <div class="hidden-div animate-opacity" id="oldpass-div">
+            <div><p><b>Enter Old Password:</b></p></div>
+            <div style="width: 4.7%;"></div>
+            <div><input type="password" class="form-control" id="oldpass-field" /></div>
+            </div>
+
+            <div class="hidden-div animate-opacity" id="newpass-div">
+                <div><p><b>Type new password:</b></p></div>
+                <div style="width: 4.7%;"></div>
+                <div><input type="password" class="form-control" id="newpass-field" /></div>
+            </div>
+
+            <div class="hidden-div animate-opacity" id="connewpass-div">
+                <div><p><b>Retype new password:</b></p></div>
+                <div class="left-padding"></div>
+                <div><input type="password" class="form-control" id="connewpas-field" /></div>
+            </div>
+            <br>
+            <div class="hidden-div animate-opacity" id="save-chg">
+            <button class="btn btn-primary m-2 animate-opacity" type="submit">Save changes</button>
+            <div class="left-padding"></div>
+            <button class="btn btn-primary m-2 animate-opacity" onclick="cancelEdit()">Cancel</button>
+            </div>
+            </div>
+
+        </div>
+
+<!--
+        Notification settings
+-->
+<div class="hidden-div animate-opacity" id="notify-div">
+    <h3>Notification Settings</h3>
+    <p>How do you want to receive QRD notifications ?</p>
+    
+    <div class="top-intro">
+    {% if userobj.notify_mode == "email" %}
+    
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="flexRadioDefault" id="radio-email" checked>
+      <label class="form-check-label" for="flexRadioDefault1">
+        By Email
+      </label>
+    </div>
+    
+    <div class="center-spacing"></div>
+    
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="flexRadioDefault" id="radio-phone">
+      <label class="form-check-label" for="flexRadioDefault2">
+        By SMS
+      </label>
+    </div>
+    {% else %}
+
+    <div class="form-check">
+        <input class="form-check-input" type="radio" name="flexRadioDefault" id="radio-email">
+        <label class="form-check-label" for="flexRadioDefault1">
+          By Email
+        </label>
+      </div>
+      
+      <div class="center-spacing"></div>
+      
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="flexRadioDefault" id="radio-phone" checked>
+        <label class="form-check-label" for="flexRadioDefault2">
+          By SMS
+        </label>
+      </div>
+      {% endif %}
+</div>
+    <br>
+    <button class="btn btn-primary m-2" type="submit">Save</button>
+</div>
+<!--
+    End of notification settings
+-->
+
+<!--
+    New QRD Form
+-->
+
+<div class="qrd-form-dashboard hidden-div animate-opacity" id="newqrd-div">
+    <h3>New Quote Request</h3>
+    <br>
+  <form>
+    <div class="container c-form">
+    <div class="top-intro">
+      <div>
+        <label class="form-label" for="p-budget">Budget Estimate in $:</label>
+        <input type="number" id="p-budget" class="form-control" required />
+      </div>
+      <div class="center-spacing"></div>
+      <div>
+        <label class="form-label" for="p-timeline">Required Timeline in days:</label>
+        <input type="number" id="p-timeline" class="form-control" required />
+      </div>
+    </div>
+    <label class="form-label" for="p-details">Briefly describe your project:</label>
+    <textarea id="p-details" class="form-control" cols="50" rows="8"></textarea>
+
+    <div class="top-intro">
+        <div>
+          <label class="form-label" for="db-cats">Service category for your project:</label>
+          <select class="form-control m-2" id="db-cats" name="sellist1">
+            {% for x in all_cats %}
+            <option>{{x.cat_name}}</option>
+            {% endfor %}
+        </select>
+        </div>
+        <div class="center-spacing"></div>
+        <div>
+        <label class="form-label" for="db-areas">Select your area:</label>
+        <select class="form-control m-2" id="db-areas" name="sellist1">
+            {% for x in all_areas %}
+            <option>{{x.location}}</option>
+            {% endfor %}
+        </select>
+        </div>
+        </div>
+
+    <br>
+    <input type="button" id="qrd-sbm" class="btn btn-primary m-2" value="Send quote request">
+  </div>
+  </form>
+  
+  </div>
+
+<!--
+    End of new QRD form
+-->
+
+<div class="hidden-div animate-opacity" id="qrd_history">
+<table>
+<tr>
+    <td><b><u>QRD No.</u></b></td>
+    <td><b><u>Description</u></b></td>
+    <td><b><u>Date</u></b></td>
+</tr>
+{% for x in qrds %}
+<tr>
+    <td style="width: 20%;"><a href="/collection/qrdetails/{{ x.qrd_id }}">{{ x.qrd_id }}</a></td>
+    <td style="width: 50%;">{{ x.short_title }}</td>
+    <td style="width: 20%;">{{ x.qrd_date }}</td>
+</tr>
+{% endfor %}
+
+</table>
+
+</div>
+
+</div>
+
+</body>
+</html>

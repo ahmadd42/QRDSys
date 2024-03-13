@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<title>Service Garage - User Sign in</title>
+<link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+<script lang="JavaScript" src="{% static 'functions.js' %}"></script>
+</head>
+<body>
+    <br>
+    <section class="top-intro">
+        <div class="top-intro left-padding"></div>
+        <div><img src="{% static 'mono2.jpg' %}" alt="website template image"></div>
+        <div class="top-intro spacing"></div>
+        <div>            
+            <nav id="primary-nav" class="top-intro right-nav">
+                <a class="top-link" href="/">Home</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a class="top-link" href="#">About us</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a class="top-link" href="/collection/userlogin">Log in</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a class="top-link" href="/collection/signup">Create an account</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a class="top-link" href="#">Contact us</a>
+            </nav>
+        </div>
+    </section>
+    
+    <br>
+    <div class="TOS-bar">
+        <p class="main-heading">Sign in now</p>
+        </div>
+        
+    <div class="vertical-spacing"></div>
+    <div class="main-login-form narrow" id="loginform">
+        <p class="error" id="login_err" name="login_err">{{ msg }}</p>
+        <form name="login_form" action="/collection/login_auth/" method="POST">
+            {% csrf_token %}
+            <div class="container c-form">
+              <label class="form-label" for="u-id">User id:</label>
+              <input type="text" name="u-id" id="u-id" class="form-control" value="{{ uname }}" required />
+              <label class="form-label" for="u-pass">Password:</label>
+              <input type="password" name="u-pass" id="u-pass" class="form-control" value="{{ upass }}" required />
+            <br>
+          <input type="submit" id="login-sbm" class="btn btn-primary m-2" value="Sign in">
+          </div>
+        </form>
+        </div>
+
+<div class="vertical-spacing-large"></div>
+
+        <div class="bottom-strip toss">
+            <div class="bottom-bar-spacing"></div>
+            <a class="bottom-link" href="/collection/copyright">Copyright © 2023</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a class="bottom-link" href="/collection/service">Terms of service</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a class="bottom-link" href="/collection/privacy">Privacy terms</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        </div>
+        
+
+</body>
+</html>

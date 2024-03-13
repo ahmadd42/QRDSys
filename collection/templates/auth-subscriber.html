@@ -1,0 +1,284 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<title>Service Garage - Your ultimate service marketplace</title>
+<link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+<script lang="JavaScript" src="{% static 'functions.js' %}"></script>
+
+<script lang="Javascript">
+
+  function getDescription() {
+      var cat = document.getElementById("query-cats").value;
+      var desc = "<b>Category Description:</b><br>";
+
+      if(cat == "Select a category") {
+        document.getElementById("desc").innerHTML = "";
+        document.getElementById("category_id").innerHTML = "";
+      }
+      else {
+
+      fetch('/collection/cats/', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers:{
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+          'X-CSRFToken': csrftoken,
+      },
+    body: JSON.stringify({querycat_name:cat}) //JavaScript object of data to POST
+    })
+    .then(response => {
+        return response.json() //Convert response to JSON
+    })
+    .then(data => {
+//Perform actions with the response data from the view
+    values = jsonToArray(data);
+    desc += values[1][1];
+    document.getElementById("desc").innerHTML = desc;
+    document.getElementById("category_id").innerHTML = values[0][1];
+  });
+  }
+}
+
+function getSubs() {
+    var cat = document.getElementById("category_id").innerHTML;
+    var zip = document.getElementById("zipc").value;
+    const data_to_send = {
+      cat_name:cat,
+      zip_code:zip
+    };
+    
+    if(cat == ""||zip == "") {
+      document.getElementById("msg").innerHTML = "Please select a category and enter your zip code";
+    }
+    else {
+    fetch('/collection/subs/', {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers:{
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+        'X-CSRFToken': csrftoken,
+},
+    body: JSON.stringify(data_to_send) //JavaScript object of data to POST
+})
+.then(response => {
+        return response.json() //Convert response to JSON
+})
+.then(data => {
+    var value = jsonToArray(data)
+    document.getElementById("msg").innerHTML = "We have <b>" + value[0][1] + "</b> service providers available in the selected category in your area";
+  });
+  }
+showCollapsed(document,"ser-nos");
+}
+
+function sendQuoteRequest() {
+  modal.style.display = "none";
+  var user_ID = document.getElementById("user_ID").innerHTML;
+  var cat_name = document.getElementById("qrd-cats").value;
+  var area_name = document.getElementById("qrd-areas").value;
+  var budget = document.getElementById("p-budget").value;
+  var timeline = document.getElementById("p-timeline").value;
+  var desc = document.getElementById("p-details").value;
+
+  const data_tosend = { q_user:user_ID,
+                        q_cat:cat_name,
+                        q_area:area_name,
+                        q_budget:budget,
+                        q_timeline:timeline,
+                        q_desc:desc,
+                        };
+      fetch('/collection/postqrd/', {
+        method: 'POST',
+        //credentials: 'same-origin',
+        headers:{
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+          'X-CSRFToken': csrftoken,
+      },
+      //headers:{"Content-type": "application/json; charset=UTF-8"},
+    body: JSON.stringify(data_tosend) //JavaScript object of data to POST
+    })
+    .then(response => {
+        return response.json() //Convert response to JSON
+    })
+    .then(data => {
+//Perform actions with the response data from the view
+    values = jsonToArray(data);
+    document.getElementById("qrd_num").innerHTML = "Your quote request has been sent to the relevant service providers. Please note your Request No. <strong>" + values[0][1] + "</strong> for future reference";
+    showCollapsed(document,"qrd_msg");
+  });
+  document.getElementById("p-budget").value = "";
+  document.getElementById("p-timeline").value = "";
+  document.getElementById("p-details").value = "";
+  document.getElementById("missing_err").display = "none";
+  showCollapsed(document,"qrd_msg");
+}
+
+</script>
+
+</head>
+<body>
+    <br>
+    <section class="top-intro">
+    <div class="top-intro left-padding"></div>
+    <div><img src="{% static 'mono2.jpg' %}" alt="website template image"></div>
+    <div id="mid-space" class="space-after"></div>
+
+    <div id="primary-nav-after" style="display: inline;">            
+      <nav class="top-intro right-nav">
+          <a class="top-link" href="/">Home</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <a class="top-link" href="#">About us</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <a class="top-link" href="collection/signup/">Create an account</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <a class="top-link" href="#">Contact us</a>
+      </nav>
+  </div>
+
+    <div id="username" style="display: inline;">
+      <p class="user-name">Welcome <b><i> {{ uname }} </i></b></p>
+      <p class="hidden-div" id="user_ID">{{ uname }}</p>
+    </div>
+</section>
+
+<div class="logout-panel" id="signout-pan">
+
+<div class="logout-box">
+  <a class="logout-link" href="collection/dashboard/">Go to Dashboard</a>
+</div>
+
+<div class="logout-box">
+  <a class="logout-link" href="/collection/logout/">Log out</a>
+</div>
+
+</div>
+
+<div>
+    <img class="container" src="{% static 'Main-Banner-2.jpg' %}" alt="website main banner">  
+</div>
+<div class="service-no hidden-panel" id="ser-nos">
+  <div class="left-padding-large"></div>
+  <div class="cat-no-content" id="msg">Please select a category and enter your zip code</div>
+</div>
+
+
+<div class="cat-form top-intro">
+    <form class="form-inline form-centered">
+      <label for="categories" class="m-2">Select a category</label>
+      <select class="form-control m-2" id="query-cats" name="sellist1" onfocus="closeCollapsed(document,'ser-nos')" onchange="getDescription(document,'/collection/cats/')">
+        <option>Select a category</option>
+        {% for x in all_cats %}
+        <option>{{x.cat_name}}</option>
+        {% endfor %}
+      </select>
+      <label for="zipc" class="m-2">Zip Code</label>
+      <input type="text" class="form-control m-2" id="zipc" maxlength="20" onfocus="closeCollapsed(document,'ser-nos')" required>
+      <input type="button" id="cat-sbm" class="btn btn-primary m-2" value="Search" onclick="getSubs()">
+    </form>
+    
+    <div class="cat-desc"></div>
+    <div class="form-centered wide" id="desc"></div>
+    <p id="category_id" style="display: none;"></p>
+  </div>
+  <br>
+  <div>
+  <h2>&nbsp;&nbsp;&nbsp;All Categories</h2>
+  </div>
+
+  <div class="grid-container">
+  
+    <div><br><br>
+      <p class="cat-heading">House help</p><br>
+      <p class="cat-number">13</p>
+    </div>
+
+    <div><br><br>
+      <p class="cat-heading">Babysitting</p><br>
+      <p class="cat-number">13</p>
+    </div>
+
+    <div><br><br>
+      <p class="cat-heading">Paint jobs</p><br>
+      <p class="cat-number">13</p>
+    </div>
+
+    <div><br><br>
+      <p class="cat-heading">House repairs</p><br>
+      <p class="cat-number">13</p>
+    </div>
+
+    <div><br><br>
+      <p class="cat-heading">Software development</p><br>
+      <p class="cat-number">13</p>
+    </div>
+
+    <div><br><br>
+      <p class="cat-heading">Digital assistance</p><br>
+      <p class="cat-number">13</p>
+    </div>
+
+    <div><br><br>
+      <p class="cat-heading">Marriage counselling</p><br>
+      <p class="cat-number">13</p>
+    </div>
+
+    <div><br><br>
+      <p class="cat-heading">Tax solicitor</p><br>
+      <p class="cat-number">13</p>
+    </div>
+
+  </div>
+
+  <div class="bottom-strip">
+
+    <div class="bottom-bar-spacing"></div>
+    <a class="bottom-link" href="collection/copyright/">Copyright © 2023</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <a class="bottom-link" href="collection/service">Terms of service</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <a class="bottom-link" href="collection/privacy">Privacy terms</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+    <div class="bottom-bar-spacing-center"></div>
+    <div><a href="#"><img class="social" src="{% static 'facebook3.png' %}" alt="website template image" onContextMenu="return false;"></a></div>
+    <div><a href="#"><img class="social" src="{% static 'twitter3.png' %}" alt="website template image"></a></div>
+    <div><a href="#"><img class="social" src="{% static 'linkedin3.png' %}" alt="website template image"></a></div>
+    <div><a href="#"><img class="social" src="{% static 'instagram3.png' %}" alt="website template image"></a></div>
+    <div><a href="#"><img class="social" src="{% static 'pinterest3.png' %}" alt="website template image"></a></div>
+  </div>
+
+</div>
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <div class="loader"></div>
+  </div>
+
+</div>
+
+<script>
+var modal = document.getElementById("myModal");
+
+function showLoader() {
+var pbudget = document.getElementById("p-budget").value;
+var ptimeline = document.getElementById("p-timeline").value;
+var pdesc = document.getElementById("p-details").value;
+  if(pbudget == "" || ptimeline == "" || pdesc == "") {
+    document.getElementById("missing_err").style.display = "block";
+  }
+else {
+  document.getElementById("missing_err").style.display = "none";
+  modal.style.display = "block";
+  setTimeout(sendQuoteRequest,500);  
+}
+}
+</script>
+</body>
+</html>

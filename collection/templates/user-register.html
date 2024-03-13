@@ -1,0 +1,119 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<title>Service Garage - New user sign up</title>
+<link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+<script>
+    function chgNotifyMode() {
+        var mode = document.getElementById("n_mode");
+        if(document.getElementById("user_type").value == "service seeker") {
+            mode.disabled = true;
+        }
+        else {
+            mode.disabled = false;
+        }
+    }
+</script>
+</head>
+<body>
+    <br>
+    <section class="top-intro">
+        <div class="top-intro left-padding"></div>
+        <div><img src="{% static 'mono2.jpg' %}" alt="website template image"></div>
+        <div class="top-intro spacing"></div>
+        <div>            
+            <nav id="primary-nav" class="top-intro right-nav">
+                <a class="top-link" href="/">Home</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a class="top-link" href="#">About us</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a class="top-link" href="/collection/userlogin">Log in</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a class="top-link" href="/collection/signup">Create an account</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a class="top-link" href="#">Contact us</a>
+            </nav>
+        </div>
+    </section>
+    
+    <br>
+    <div class="TOS-bar">
+        <p class="main-heading">New to ServiceGarage ? Register Now</p>
+        </div>
+        
+    <div class="vertical-spacing"></div>
+    <div class="main-login-form wide" id="loginform">
+        <form name="reg_form" action="/collection/user-reg/" method="POST">
+            {% csrf_token %}
+            <div class="container c-form">
+            <p class="error">{{ err }}</p>
+              <label class="form-label" for="user_type">Type of user:</label>
+              <select class="form-control" id="user_type" name="user_type" onchange="chgNotifyMode()">
+                <option>subscriber</option>
+                <option>service seeker</option>
+                </select>
+                <p class="hidden-div" id="view_usertype">{{ u_type }}</p>
+                <br>
+                <label class="form-label" for="n_mode">Notification mode for quote requests:</label>
+                <small>(Only for service providers)</small>
+                    <select class="form-control" id="n_mode" name="n_mode">
+                      <option>email</option>
+                      <option>sms</option>
+                      </select>
+                <p class="hidden-div" id="view_nmode">{{ nt_mode }}</p>
+                <br>
+              <label class="form-label" for="fname">First Name:</label>
+              <input type="text" id="fname" name="fname" class="form-control" value="{{ f_name }}" required />
+              <label class="form-label" for="lname">Last Name:</label>
+              <input type="text" id="lname" name="lname" class="form-control" value="{{ l_name }}" required />
+              <label class="form-label" for="us_email">Email:</label>
+              <input type="email" id="us_email" name="us_email" class="form-control" value="{{ u_email }}" required />
+              <label class="form-label" for="us_phone">Phone No <small>(Must be in the format "ccaaannnnnnn" where c=country code, a=area code, n=number)</small>:</label>
+              <input type="number" id="us_phone" name="us_phone" class="form-control" value="{{ u_phone }}" />
+              <label class="form-label" for="us_id">Type a User Name for you. It should be alpha-numeric:</label>
+              <input type="text" id="us_id" name="us_id" class="form-control" value="{{ u_id }}" required />
+              <label class="form-label" for="us_pass">Type a Password for you. It should be at least 8 characters: </label>
+              <input type="password" id="us_pass" name="us_pass" class="form-control" value="{{ u_pass }}" required / >
+              <label class="form-label" for="us_pass_2">Retype your Password:</label>
+              <input type="password" id="us_pass_2" name="us_pass_2" class="form-control" value="{{ u_pass_2 }}" required />
+              <br>
+          <input type="submit" id="signup-sbm" class="btn btn-primary m-2" value="Register">
+          </div>
+        </form>
+        </div>
+
+<div class="vertical-spacing-large"></div>
+
+        <div class="bottom-strip toss">
+            <div class="bottom-bar-spacing"></div>
+            <a class="bottom-link" href="/collection/copyright">Copyright © 2023</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a class="bottom-link" href="/collection/service">Terms of service</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a class="bottom-link" href="/collection/privacy">Privacy terms</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        </div>
+
+<!--<script>
+        var utype_val = document.getElementById("view_usertype").value;
+        var nmode_val = document.getElementById("view_nmode").value;
+        var mode = document.getElementById("n_mode");
+        var utype = document.getElementById("user_type");
+        if(utype_val == "subscriber") {
+            utype.selectedIndex = 0;
+        }
+        else if(utype_val == "service seeker") {
+            utype.selectedIndex = 1;
+        }
+        if(!mode.disabled) {
+        if(nmode_val == "email") {
+            mode.selectedIndex = 0;
+        }
+        else if(nmode_val == "sms") {
+            mode.selectedIndex = 1;
+        }
+    }
+
+</script> -->
+
+</body>
+</html>
