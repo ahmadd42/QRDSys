@@ -1,0 +1,1 @@
+Aim of this system is to collect QRD (Quote request data) from service seekers and send those quote requests to all service providers who have subscribed to a particular service list A service list has the attributes service category and zip code.
